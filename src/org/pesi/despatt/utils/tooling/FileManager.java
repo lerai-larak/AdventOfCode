@@ -10,31 +10,42 @@ import java.util.Properties;
 
 public class FileManager {
 
-
-	public static String getFileContents(String fileName){
+	/**
+	 * Read a content file from filesystem
+	 * @param fileName name of file to use
+	 * @return a string of the file contents
+	 */
+	public static String getFileContents(String fileName) {
 		Properties properties = new Properties();
 		InputStream inputStream = null;
-		String contents  = null;
+		StringBuilder contents = new StringBuilder();
+		String line = null;
+		BufferedReader bufferedReader = null;
 
-		try{
+		try {
 			inputStream = new FileInputStream("config.properties");
 			properties.load(inputStream);
 			String directory = properties.getProperty("filesDir");
-			BufferedReader file = new BufferedReader(new FileReader(new File(directory + fileName)));
-			contents = file.readLine();
-		}catch (IOException exception){
-			System.out.println("Error reading properties file: "+exception);
-		} finally {
-			if(inputStream != null){
-				try{
+			bufferedReader = new BufferedReader(new FileReader(new File(directory + fileName)));
+			while ((line = bufferedReader.readLine()) != null) {
+				contents.append(line);
+			}
+		}
+		catch (IOException exception) {
+			System.out.println("Error reading properties file: " + exception);
+		}
+		finally {
+			if (inputStream != null && bufferedReader != null) {
+				try {
 					inputStream.close();
+					bufferedReader.close();
+
 				}
-				catch (IOException exception){
+				catch (IOException exception) {
 					exception.printStackTrace();
 				}
 			}
 		}
-		return contents;
+		return contents.toString();
 	}
-
 }
